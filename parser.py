@@ -12,6 +12,8 @@
 import json
 import re
 import collections
+import pprint
+pp = pprint.PrettyPrinter(indent=1)
 
 
 # Open Sites Mapping
@@ -30,23 +32,20 @@ DevicesRegex = re.compile(r'''(?<=-)[a-z]{2}(?<!-)''')
 UnitNameRegex = re.compile(r'''(?<=:\s\s).*$''')
 
 
-sample = '''172.18.0.128             DR13-u00-os-01a         ## OWNER:  Rescue Rangers'''
+def reader():
+    output = []
+    with open('./tmp/hosts') as a_file:
+        Lines = a_file.readlines()
+        for line in Lines:
+            ipv4_result     = ValidIpAddressRegex.search(line)
+            device_result   = DevicesRegex.search(line)
+            site_result     = SiteCodeRegex.search(line)
+            unit_result     = UnitNameRegex.search(line)
+            dict = {'ipv4_address':ipv4_result.group(0),'device_type':device_result.group(0),'site_name':site_result.group(0),'unit_name':unit_result.group(0)}
+            output += [dict]
+        pp.pprint(output)
 
-ipv4_result     = ValidIpAddressRegex.search(sample)
-device_result   = DevicesRegex.search(sample)
-site_result     = SiteCodeRegex.search(sample)
-unit_result     = UnitNameRegex.search(sample)
-
-dict={'ipv4_address':ipv4_result.group(0),'device':device_result.group(0)}
-print(dict)
+reader()
 
 
-
-# def reader():
-#     values = {}
-#     with open('./tmp/hosts') as a_file:
-#         Lines = a_file.readlines()
-#         for line in Lines:
-#             values = dict{'ipv4_address':ValidIpAddressRegex.match(line)}
-#             print(values)
            
