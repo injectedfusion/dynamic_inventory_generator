@@ -5,7 +5,7 @@
 #                   by                      #
 #            Injected Fusion                #
 #                                           #
-#  Version 0.1 - Tested with: Python 3.8.2  #
+#  Version 0.1.1 - Tested with: Python 3.8.2  #
 #                                           #
 #############################################
 
