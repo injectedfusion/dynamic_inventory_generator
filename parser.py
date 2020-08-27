@@ -72,7 +72,6 @@ def reader():
 
 # Transform site names from mappings
 groups = [li['site_name'] for li in reader()]
-
 def replace(list, dictionary):
     dict = {'groups':[sites.get(item, item) for item in list] }
     return [sites.get(item, item) for item in list]
