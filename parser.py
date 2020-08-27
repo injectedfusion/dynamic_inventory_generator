@@ -5,20 +5,27 @@
 #                   by                      #
 #            Injected Fusion                #
 #                                           #
-#  Version 0.1 - Tested with: Python 3.8.2  #
+# Version 0.1.1 - Tested with: Python 3.8.2 #
 #                                           #
 #############################################
 
+import os
+import sys
+import argparse
 import json
 import re
 import collections
+# import pyyaml
 import pprint
 pp = pprint.PrettyPrinter(indent=1)
+from operator import itemgetter
+from iteration_utilities import unique_everseen
 
 
 # Open Sites Mapping
 with open('./mappings/sites.json') as f:
     sites = json.load(f)
+
 
 # Pre-compile regular expresions into an object
 # Courtesy of https://www.geeksforgeeks.org/python-program-to-validate-an-ip-address/
@@ -32,6 +39,21 @@ DevicesRegex        = re.compile(r'''(?<=-)[a-z]{2}(?<!-)''')
 UnitNameRegex       = re.compile(r'''(?<=:\s\s).*$''')
 HostNameRegex       = re.compile(r'''(?<=\b)[a-zA-Z0-9]{4}-[a-zA-Z0-9]{3}-[a-zA-Z0-9]{2}-[a-zA-Z0-9]{3}(?=\b)''')
 
+
+
+# class DynamicInventory(object):
+
+#     def __init__(self):
+#         self.inventory = {}
+#         self.read_cli_args()
+
+#         # Called with `--list`
+#         if self.args.list:
+#             self.inventory = self.dynamic_inventory()
+#         # Called with `--host [hostname]`.
+#         elif self.args.host:
+#             # Not implemented, sinced we return _meta info `--list`
+#             self.inventory = self.dynamic_inventory()
 
 def reader():
     output = []
@@ -47,7 +69,19 @@ def reader():
             output += [dict]
         # pp.pprint(output)
         return (output)
-        
-pp.pprint(reader())
 
-           
+# Transform site names from mappings
+groups = [li['site_name'] for li in reader()]
+def replace(list, dictionary):
+    dict = {'groups':[sites.get(item, item) for item in list] }
+    return [sites.get(item, item) for item in list]
+
+
+# Remove duplicates from groupings
+children = (list(unique_everseen(replace(groups,sites))))
+
+dict2 = {'groups':
+    children
+}
+
+pp.pprint (dict2)

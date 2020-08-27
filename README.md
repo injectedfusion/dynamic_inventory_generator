@@ -135,21 +135,12 @@ $ python3 parser.py
 And tada! I will see output similar to this:
 
 ```bash
-[{'device_type': 'os',
-  'host_name': 'DR13-u00-os-01a',
-  'ipv4_address': '172.18.0.128',
-  'site_name': 'DR13',
-  'unit_name': 'Rescue Rangers'},
- {'device_type': 'os',
-  'host_name': 'DR13-u00-os-01b',
-  'ipv4_address': '172.18.0.129',
-  'site_name': 'DR13',
-  'unit_name': 'Rescue Rangers'},
- {'device_type': 'os',
-  'host_name': 'DLCA-u00-os-01a',
-  'ipv4_address': '172.16.0.128',
-  'site_name': 'DLCA',
-  'unit_name': 'Mouseketeers'},
+{'groups': ['Tokyo Disney Resort',
+            'Disneyland Resort Anaheim',
+            'Disneyland Paris',
+            'Walt Disney World Resort Orlando',
+            'Hong Kong Disneyland Resort',
+            'Shanghai Disney Resort']}
 ```
 
 **More coming soon!**
