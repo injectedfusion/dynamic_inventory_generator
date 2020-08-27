@@ -70,7 +70,7 @@ def reader():
         # pp.pprint(output)
         return (output)
 
-
+# Transform site names from mappings
 groups = [li['site_name'] for li in reader()]
 
 def replace(list, dictionary):
@@ -78,10 +78,11 @@ def replace(list, dictionary):
     return [sites.get(item, item) for item in list]
 
 
-# pp.pprint(replace(groups,sites))
+# Remove duplicates from groupings
+children = (list(unique_everseen(replace(groups,sites))))
 
 dict2 = {'groups':
-    (replace(groups,sites))
+    children
 }
 
 pp.pprint (dict2)
