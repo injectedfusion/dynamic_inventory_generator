@@ -18,6 +18,13 @@ This repo uses a Python script to take the hosts file and make an Ansible parsab
 
 It's currently a work in progress and we look forward to continuing to improve it.
 
+## Useful Resources on Dynamic Inventory in Ansible
+
+For an introduction to dynamic inventory and how it differs from static inventory, check out these resources
+
+* [Ansible Dynamic Inventory: Is It So Hard?](https://blog.opstree.com/2019/05/14/ansible-dynamic-inventory-is-it-so-hard/)
+* [Quick Introduction to Static and Dynamic Inventory](https://www.youtube.com/watch?v=VlIl2gyF7kA)
+
 ## Usage
 
 * You need Python 3 installed on your workstation. To check whether you have Python3 installed (NOTE: it must be Python 3, not Python 2), run this command in your terminal:
