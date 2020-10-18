@@ -18,13 +18,41 @@ This repo uses a Python script to take the hosts file and make an Ansible parsab
 
 It's currently a work in progress and we look forward to continuing to improve it.
 
+## Useful Resources on Dynamic Inventory in Ansible
+
+For an introduction to dynamic inventory and how it differs from static inventory, check out these resources
+
+* [Ansible Dynamic Inventory: Is It So Hard?](https://blog.opstree.com/2019/05/14/ansible-dynamic-inventory-is-it-so-hard/)
+* [Quick Introduction to Static and Dynamic Inventory](https://www.youtube.com/watch?v=VlIl2gyF7kA)
+
 ## Usage
-You should have:
-* Python 3 installed on your workstation. To check whether you have Python3 installed (NOTE: it must be Python3, not Python 2), run this command in your terminal:
+
+* You need Python 3 installed on your workstation. To check whether you have Python3 installed (NOTE: it must be Python 3, not Python 2), run this command in your terminal:
 
 ```bash
 $ python3 --version
 ```
+
+* You also need pip3 installed on your workstation. To check, run:
+
+```bash
+$ pip3 --version
+```
+
+* Then you will need to clone this repository using git
+
+```bash
+$ git clone git@github.com:injectedfusion/dynamic_inventory_generator.git 
+```
+
+* Then change directories into the repo and install the requirements using pip3
+
+```bash
+$ cd dynamic_inventory_generator
+$ pip3 install -r requirements.txt
+```
+
+Now you are ready to run the software!
 
 ## Sample Data
 
