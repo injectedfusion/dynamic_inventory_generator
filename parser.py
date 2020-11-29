@@ -107,7 +107,16 @@ def sort_by_site_name(expanded_site_names_contents, site_names):
     for entry in expanded_site_names_content:
         site_name = entry['site_name']
 
-        container_dictionary[site_name].append(entry)
+        # Remove site_name from the individual
+        # device entry because it is now redundant
+        formatted_site_item = {
+            'device_type': entry['device_type'],
+            'host_name': entry['host_name'],
+            'ipv4_address': entry['ipv4_address'],
+            'unit_name': entry['unit_name']
+        }
+
+        container_dictionary[site_name].append(formatted_site_item)
 
     return container_dictionary
 
@@ -119,15 +128,21 @@ def sort_by_unit_name(site_name_dictionary):
     for entry in site_name_dictionary:
         unit_name = sanitized_name(entry['unit_name'])
 
+        formatted_unit_item = {
+            'device_type': entry['device_type'],
+            'host_name': entry['host_name'],
+            'ipv4_address': entry['ipv4_address'],
+        }
+
         # Check if the unit name has already
         # been added as a key in the unit dictionary
         if unit_name in unit_sorted_dictionary:
-            # if it is, do not create it again
+            # if it has, do not create it again
             # just append it to the existing one
-            unit_sorted_dictionary[unit_name].append(entry)
+            unit_sorted_dictionary[unit_name].append(formatted_unit_item)
         else:
-            # if it is not, create the key
-            unit_sorted_dictionary[unit_name] = [entry]
+            # if it has not, create the key
+            unit_sorted_dictionary[unit_name] = [formatted_unit_item]
 
     return unit_sorted_dictionary
 
@@ -135,22 +150,28 @@ def sort_by_device_type(device_dictionary):
     device_type_sorted_dictionary = {}
 
     for device in device_dictionary:
-#        pp.pprint(device)
-       device_type = sanitized_name(device['device_type'])
-#       pp.pprint(device_type)
+        device_type = sanitized_name(device['device_type'])
+
+        formatted_device_item = {
+            'host_name': device['host_name'],
+            'ipv4_address': device['ipv4_address'],
+        }
+
         # Check if the device type has already
         # been added as a key in the devices dictionary
-       if device_type in device_type_sorted_dictionary:
-           device_type_sorted_dictionary[device_type].append(device)
-       else: 
-           device_type_sorted_dictionary[device_type] = [device]
+        if device_type in device_type_sorted_dictionary:
+            # if it has, do not create it again
+            # just append it to the existing one
+            device_type_sorted_dictionary[device_type].append(formatted_device_item)
+        else: 
+            # if it has not, create the key
+            device_type_sorted_dictionary[device_type] = [formatted_device_item]
 
     return device_type_sorted_dictionary
 
 def formatted_data(expanded_site_names_content, site_names):
     # First, sort by site name
     sorted_site_name_data = sort_by_site_name(expanded_site_names_content, site_names)
-   # pp.pprint(sorted_site_name_data)
 
     # Now, sort each site by unit name
     for site in site_names:
@@ -162,10 +183,14 @@ def formatted_data(expanded_site_names_content, site_names):
 
         # Now sort each unit by device type
         for unit, devices in unit_sorted_dictionary.items():
-            device_sorted_inventory = sort_by_device_type(devices)
-            # pp.pprint(unit_sorted_dictionary[unit])
+            device_type_sorted_dictionary = sort_by_device_type(devices)
+
+            # Clear the entry for the unit in the dictionary
             unit_sorted_dictionary[unit].clear()
-            unit_sorted_dictionary[unit] = device_sorted_inventory
+
+            # Then set the entry to be the device_type_sorted 
+            # directory
+            unit_sorted_dictionary[unit] = device_type_sorted_dictionary
         
         # Clear the entry for the site name in the dictionary
         sorted_site_name_data[site_entry_name].clear()
