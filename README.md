@@ -160,29 +160,67 @@ Now, let's run the script on the sample data:
 $ python3 parser.py
 ```
 
-And tada! I will see output similar to this:
+This will produce a file called output.yaml on your system.
+
+If I open it up:
+
+Tada! I will see output similar to this:
 
 ```bash
-[{'device_type': 'os',
-  'host_name': 'DR13-u00-os-01a',
-  'ipv4_address': '172.18.0.128',
-  'site_name': 'Tokyo Disney Resort',
-  'unit_name': 'Rescue Rangers'},
- {'device_type': 'os',
-  'host_name': 'DR13-u00-os-01b',
-  'ipv4_address': '172.18.0.129',
-  'site_name': 'Tokyo Disney Resort',
-  'unit_name': 'Rescue Rangers'},
- {'device_type': 'os',
-  'host_name': 'DLCA-u00-os-01a',
-  'ipv4_address': '172.16.0.128',
-  'site_name': 'Disneyland Resort Anaheim',
-  'unit_name': 'Mouseketeers'},
- {'device_type': 'os',
-  'host_name': 'DLCA-u00-os-01b',
-  'ipv4_address': '172.16.0.129',
-  'site_name': 'Disneyland Resort Anaheim',
-  'unit_name': 'Mouseketeers'}]
+all:
+  children:
+    disneyland_paris:
+      7_dwarves:
+        outer_switches:
+        - DLFR-u00-os-01a:
+            ansible_host: 172.19.0.128
+        - DLFR-u00-os-01b:
+            ansible_host: 172.19.0.129
+      gargoyles:
+        outer_switches:
+        - DLFR-u00-os-02a:
+            ansible_host: 172.19.8.128
+        - DLFR-u00-os-02b:
+            ansible_host: 172.19.8.129
+      prince_johns_guards:
+        outer_switches:
+        - DLFR-u00-os-03a:
+            ansible_host: 172.19.16.129
+        - DLFR-u00-os-03b:
+            ansible_host: 172.19.16.129
+    disneyland_resort_anaheim:
+      mighty_ducks:
+        outer_switches:
+        - DLCA-u00-os-03a:
+            ansible_host: 172.16.16.128
+        - DLCA-u00-os-03b:
+            ansible_host: 172.16.16.128
+      mouseketeers:
+        outer_switches:
+        - DLCA-u00-os-01a:
+            ansible_host: 172.16.0.128
+        - DLCA-u00-os-01b:
+            ansible_host: 172.16.0.129
+      nutcracker_sentries:
+        outer_switches:
+        - DLCA-u00-os-02a:
+            ansible_host: 172.16.8.128
+        - DLCA-u00-os-02b:
+            ansible_host: 172.16.8.128
+    hong_kong_disneyland_resort:
+      muppets:
+        outer_switches:
+        - DLHK-u00-os-01a:
+            ansible_host: 172.20.0.128
+        - DLHK-u00-os-01b:
+            ansible_host: 172.20.0.129
+    shanghai_disney_resort:
+      zurg_bots:
+        outer_switches:
+        - DRCN-u00-os-01a:
+            ansible_host: 172.21.0.128
+        - DRCN-u00-os-01b:
+            ansible_host: 172.21.0.128
 ```
 
 **More coming soon!**
