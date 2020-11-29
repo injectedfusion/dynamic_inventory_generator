@@ -82,132 +82,59 @@ def expand_names(contents, site_names, device_types):
 
     return contents
 
-# Create a dictionary of dictionaries
-# where each dictionary corresponds to a 
-# site name (and one big dictionary holds
-# all of them)
-def site_dictionary(site_names):
-    site_dictionary = {}
+def formatted_hosts_json(input_contents):
+    hosts_json_dict = {}
 
-    for s in site_names:
-        site_name = site_names[s]
-        site_key = sanitized_name(site_name)
-        site_dictionary[site_key] = []
-    
-    return site_dictionary
-
-# Sort the entries by Site name
-def sort_by_site_name(expanded_site_names_contents, site_names):
-    container_dictionary = site_dictionary(site_names)
-
-    for entry in expanded_site_names_contents:
+    for entry in input_contents:
         site_name = entry['site_name']
 
-        # Remove site_name from the individual
-        # device entry because it is now redundant
-        formatted_site_item = {
-            'device_type': entry['device_type'],
-            'host_name': entry['host_name'],
-            'ipv4_address': entry['ipv4_address'],
-            'unit_name': entry['unit_name']
-        }
+        # Check if the site name already exists
+        # as a key in the hosts_json_dict dictionary
+        # if it does not already exist, add it
+        # and set it to an empty dictionary
+        if not site_name in hosts_json_dict:
+            hosts_json_dict[site_name] = {}
+    
+        # Now, let's check if the unit name exists
+        # as a key for the dictionary attached
+        # to the site_name
+        # if it does not already exist, add it
+        # and set it to an empty dictionary
+        unit_name = entry['unit_name']
 
-        container_dictionary[site_name].append(formatted_site_item)
+        if not unit_name in hosts_json_dict[site_name]:
+            hosts_json_dict[site_name][unit_name] = {}
 
-    return container_dictionary
+        # Finally, let's check if the device_type
+        # attached to the unit_name
+        # exists as a key for the dictionary
+        # if it does not already exist, add it
+        # and set it to an empty ARRAY
+        device_type = entry['device_type']
 
-# Takes an individual site_name dictionary
-# Then sorts it by unit_name
-def sort_by_unit_name(site_name_dictionary):
-    unit_sorted_dictionary = {}
+        if not device_type in hosts_json_dict[site_name][unit_name]:
+            hosts_json_dict[site_name][unit_name][device_type] = []
 
-    for entry in site_name_dictionary:
-        unit_name = sanitized_name(entry['unit_name'])
+        # Now, let's put the device in the correct place 
+        # in the dictionary - under the correct site name,
+        # correct unit name, and correct device type
 
-        formatted_unit_item = {
-            'device_type': entry['device_type'],
-            'host_name': entry['host_name'],
-            'ipv4_address': entry['ipv4_address'],
-        }
-
-        # Check if the unit name has already
-        # been added as a key in the unit dictionary
-        if unit_name in unit_sorted_dictionary:
-            # if it has, do not create it again
-            # just append it to the existing one
-            unit_sorted_dictionary[unit_name].append(formatted_unit_item)
-        else:
-            # if it has not, create the key
-            unit_sorted_dictionary[unit_name] = [formatted_unit_item]
-
-    return unit_sorted_dictionary
-
-def sort_by_device_type(device_dictionary):
-    device_type_sorted_dictionary = {}
-
-    for device in device_dictionary:
-        device_type = sanitized_name(device['device_type'])
-
-        formatted_device_item = {
-            device['host_name']: {
-                'ansible_host': device['ipv4_address']
+        # First, we format it
+        formatted_individual_device = {
+            entry['host_name']: {
+                'ansible_host': entry['ipv4_address']
             }
         }
 
-        # Check if the device type has already
-        # been added as a key in the devices dictionary
-        if device_type in device_type_sorted_dictionary:
-            # if it has, do not create it again
-            # just append it to the existing one
-            device_type_sorted_dictionary[device_type].append(formatted_device_item)
-        else: 
-            # if it has not, create the key
-            device_type_sorted_dictionary[device_type] = [formatted_device_item]
+        # Then put it in the correct place in the dictionary
+        hosts_json_dict[site_name][unit_name][device_type].append(formatted_individual_device)
 
-    return device_type_sorted_dictionary
-
-#def format_device_entry()
-
-def formatted_data(expanded_site_names_content, site_names):
-    # First, sort by site name
-    sorted_site_name_data = sort_by_site_name(expanded_site_names_content, site_names)
-
-    # Now, sort each site by unit name
-    for site in site_names:
-        site_entry_name = sanitized_name(site_names[site])
-        site_entry = sorted_site_name_data[site_entry_name]
-
-        # First, let's sort by unit
-        unit_sorted_dictionary = sort_by_unit_name(site_entry)
-
-        # Now sort each unit by device type
-        for unit, devices in unit_sorted_dictionary.items():
-            device_type_sorted_dictionary = sort_by_device_type(devices)
-
-            # Clear the entry for the unit in the dictionary
-            unit_sorted_dictionary[unit].clear()
-
-            # Then set the entry to be the device_type_sorted 
-            # directory
-            unit_sorted_dictionary[unit] = device_type_sorted_dictionary
         
-        # Clear the entry for the site name in the dictionary
-        sorted_site_name_data[site_entry_name].clear()
-
-        # Then set the entry to be the unit_sorted_dictionary
-        sorted_site_name_data[site_entry_name] = unit_sorted_dictionary
-
-
-    return sorted_site_name_data
+    return hosts_json_dict
 
 contents = file_contents('./tmp/hosts')
 site_names = site_names_map('./mappings/sites.json')
 device_types = device_types_map('./mappings/devices.json')
-#pp.pprint(device_types)
 
-expanded_content = expand_names(contents, site_names, device_types)
-
-#pp.pprint(expanded_device_types_content)
-formatted_dictionary = formatted_data(expanded_content, site_names)
-
-pp.pprint(formatted_dictionary)
+output = formatted_hosts_json(contents)
+pp.pprint(output)
