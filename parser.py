@@ -35,7 +35,7 @@ HostNameRegex       = re.compile(r'''(?<=\b)[a-zA-Z0-9]{4}-[a-zA-Z0-9]{3}-[a-zA-
 
 def file_contents(path_to_file):
     output = []
-    with open('./tmp/hosts') as a_file:
+    with open(path_to_file) as a_file:
         Lines = a_file.readlines()
         for line in Lines:
             ipv4_result     = ValidIpAddressRegex.search(line)
@@ -48,10 +48,15 @@ def file_contents(path_to_file):
         return (output)
 
 
-def site_names_map(path_to_map_file):
-    with open('./mappings/sites.json') as f:
+def site_names_map(path_to_file):
+    with open(path_to_file) as f:
         sites = json.load(f)
     return sites
+
+def device_types_map(path_to_file):
+    with open(path_to_file) as f:
+        device_types = json.load(f)
+    return device_types
 
 # Takes a string formatted like this: 'Disneyland Resort Anaheim'
 # and converts it to be formatted like this: 'disneyland_resort_anaheim'
@@ -71,10 +76,15 @@ def replace_site_names(contents, site_names):
 
     return contents
 
-contents = file_contents('./tmp/hosts')
-site_names = site_names_map('./mappings/sites.json')
+def replace_device_types(contents, device_types):
+    for c in contents:
+        expanded_device_type = device_types[c['device_type']]
 
-expanded_site_names_content = replace_site_names(contents, site_names)
+        # replace site name abbreviation with expanded 
+        # and sanitized site name
+        c['device_type'] = sanitized_name(expanded_device_type)
+
+    return contents
 
 # Create a dictionary of dictionaries
 # where each dictionary corresponds to a 
@@ -91,7 +101,7 @@ def site_dictionary(site_names):
     return site_dictionary
 
 # Sort the entries by Site name
-def sort_by_site_names(expanded_site_names_contents, site_names):
+def sort_by_site_name(expanded_site_names_contents, site_names):
     container_dictionary = site_dictionary(site_names)
 
     for entry in expanded_site_names_content:
@@ -111,9 +121,6 @@ def sort_by_unit_name(site_name_dictionary):
 
         # Check if the unit name has already
         # been added as a key in the unit dictionary
-        # Check if there is a key in the dictionary
-        # that corresponds with the unit name
-
         if unit_name in unit_sorted_dictionary:
             # if it is, do not create it again
             # just append it to the existing one
@@ -124,27 +131,95 @@ def sort_by_unit_name(site_name_dictionary):
 
     return unit_sorted_dictionary
 
+def sort_by_device_type(unit_sorted_dictionary):
+    device_type_sorted_dictionary = {}
+    pp.pprint(unit_sorted_dictionary)
+
+    for unit in unit_sorted_dictionary:
+#        pp.pprint(unit_sorted_dictionary[unit])
+        pp.pprint("===============")
+        pp.pprint("here is the unit")
+        pp.pprint(unit)
+
+        unit_entry = unit_sorted_dictionary[unit]
+        pp.pprint("===============")
+        pp.pprint("here is the unit entry")
+        pp.pprint(unit_entry)
+
+        pp.pprint("===============")
+        pp.pprint("here is the unit entry length")
+        pp.pprint(len(unit_entry))
+
+        for device in unit_entry:
+            pp.pprint("===============")
+            pp.pprint("here is the device")
+            pp.pprint(device)
+            pp.pprint("here is the device type")
+            pp.pprint(device['device_type'])
+ 
+
+
+#        for device in unit_entry:
+    #        pp.pprint(device)
+    #    pp.pprint("===============")
+
+#        for device in unit_sorted_dictionary[unit_entry]
+#        for device_type in unit_sorted_dictionary[entry]:
+#            pp.pprint(device_type)
+
+#        device_type_name = sanitized_name(device_types[])
+#        device_type = sanitized_name(unit_sorted_dictionary[entry['device_type']])
+
+        # Check if the device type has already
+        # been added as a key in the device_type_sorted_dictionary
+#        if device_type in device_type_sorted_dictionary:
+            # if it is, do not create it again
+            # just append it to the existing one
+#            device_type_sorted_dictionary[device_type].append(entry)
+#        else:
+            # if it is not, create the key
+#            device_type_sorted_dictionary[device_type] = [entry]
+
+    return device_type_sorted_dictionary
 
 def formatted_data(expanded_site_names_content, site_names):
     # First, sort by site name
-    sorted_site_name_data = sort_by_site_names(expanded_site_names_content, site_names)
-    pp.pprint(sorted_site_name_data)
+    sorted_site_name_data = sort_by_site_name(expanded_site_names_content, site_names)
+   # pp.pprint(sorted_site_name_data)
 
-    # Now, sort by unit name
+    # Now, sort each site by unit name
     for site in site_names:
         site_entry_name = sanitized_name(site_names[site])
         site_entry = sorted_site_name_data[site_entry_name]
 
+        # First, let's sort by unit
         unit_sorted_dictionary = sort_by_unit_name(site_entry)
-  
+
+        # Now sort each unit by device type
+        for unit in unit_sorted_dictionary:
+            unit_device_type_sorted_dictionary = sort_by_device_type(unit_sorted_dictionary)
+
+            unit_sorted_dictionary[unit].clear()
+            unit_sorted_dictionary[unit] = unit_device_type_sorted_dictionary
+        
         # Clear the entry for the site name in the dictionary
         sorted_site_name_data[site_entry_name].clear()
 
         # Then set the entry to be the unit_sorted_dictionary
         sorted_site_name_data[site_entry_name] = unit_sorted_dictionary
-        
+
+
     return sorted_site_name_data
 
+contents = file_contents('./tmp/hosts')
+site_names = site_names_map('./mappings/sites.json')
+device_types = device_types_map('./mappings/devices.json')
+#pp.pprint(device_types)
+
+expanded_site_names_content = replace_site_names(contents, site_names)
+expanded_device_types_content = replace_device_types(contents, device_types)
+
+#pp.pprint(expanded_device_types_content)
 formatted_dictionary = formatted_data(expanded_site_names_content, site_names)
 
-pp.pprint(formatted_dictionary)
+#pp.pprint(formatted_dictionary)
