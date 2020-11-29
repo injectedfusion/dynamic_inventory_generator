@@ -73,19 +73,29 @@ def sanitized_name(name):
     sanitized_name = lower_case_name.replace(" ", "_")
     return sanitized_name
 
+def setup_inventory_dictionary():
+    inventory_dictionary = {
+        'all': {
+            'hosts': {},
+            'children': {}
+        }
+    }
+
+    return inventory_dictionary
+
 def formatted_hosts_json(input_contents, site_names_map, device_types_map):
-    hosts_json_dict = {}
+    inventory_dictionary = setup_inventory_dictionary()
 
     for entry in input_contents:
         expanded_site_name = expanded_name(entry['site_name'], site_names_map)
         site_name = sanitized_name(expanded_site_name)
 
         # Check if the site name already exists
-        # as a key in the hosts_json_dict dictionary
+        # as a key in the inventory_dictionary dictionary
         # if it does not already exist, add it
         # and set it to an empty dictionary
-        if not site_name in hosts_json_dict:
-            hosts_json_dict[site_name] = {}
+        if not site_name in inventory_dictionary['all']['children']:
+            inventory_dictionary['all']['children'][site_name] = {}
     
         # Now, let's check if the unit name exists
         # as a key for the dictionary attached
@@ -94,8 +104,8 @@ def formatted_hosts_json(input_contents, site_names_map, device_types_map):
         # and set it to an empty dictionary
         unit_name = sanitized_name(entry['unit_name'])
 
-        if not unit_name in hosts_json_dict[site_name]:
-            hosts_json_dict[site_name][unit_name] = {}
+        if not unit_name in inventory_dictionary['all']['children'][site_name]:
+            inventory_dictionary['all']['children'][site_name][unit_name] = {}
 
         # Finally, let's check if the device_type
         # attached to the unit_name
@@ -105,8 +115,8 @@ def formatted_hosts_json(input_contents, site_names_map, device_types_map):
         expanded_device_type = expanded_name(entry['device_type'], device_types_map)
         device_type = sanitized_name(expanded_device_type)
 
-        if not device_type in hosts_json_dict[site_name][unit_name]:
-            hosts_json_dict[site_name][unit_name][device_type] = []
+        if not device_type in inventory_dictionary['all']['children'][site_name][unit_name]:
+            inventory_dictionary['all']['children'][site_name][unit_name][device_type] = []
 
         # Now, let's put the device in the correct place 
         # in the dictionary - under the correct site name,
@@ -120,10 +130,10 @@ def formatted_hosts_json(input_contents, site_names_map, device_types_map):
         }
 
         # Then put it in the correct place in the dictionary
-        hosts_json_dict[site_name][unit_name][device_type].append(formatted_individual_device)
+        inventory_dictionary['all']['children'][site_name][unit_name][device_type].append(formatted_individual_device)
 
         
-    return hosts_json_dict
+    return inventory_dictionary
 
 contents = file_contents('./tmp/hosts')
 site_names = site_names_map('./mappings/sites.json')
