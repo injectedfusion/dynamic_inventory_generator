@@ -153,8 +153,9 @@ def sort_by_device_type(device_dictionary):
         device_type = sanitized_name(device['device_type'])
 
         formatted_device_item = {
-            'host_name': device['host_name'],
-            'ipv4_address': device['ipv4_address'],
+            device['host_name']: {
+                'ansible_host': device['ipv4_address']
+            }
         }
 
         # Check if the device type has already
@@ -168,6 +169,8 @@ def sort_by_device_type(device_dictionary):
             device_type_sorted_dictionary[device_type] = [formatted_device_item]
 
     return device_type_sorted_dictionary
+
+#def format_device_entry()
 
 def formatted_data(expanded_site_names_content, site_names):
     # First, sort by site name
