@@ -15,6 +15,7 @@ import argparse
 import json
 import re
 import collections
+import yaml
 import pprint
 pp = pprint.PrettyPrinter(indent=1)
 from operator import itemgetter
@@ -129,4 +130,5 @@ site_names = site_names_map('./mappings/sites.json')
 device_types = device_types_map('./mappings/devices.json')
 
 output = formatted_hosts_json(contents, site_names, device_types)
-pp.pprint(output)
+yaml_file = open('output.yaml', 'w+')
+yaml.dump(output, yaml_file)
