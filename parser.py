@@ -131,54 +131,19 @@ def sort_by_unit_name(site_name_dictionary):
 
     return unit_sorted_dictionary
 
-def sort_by_device_type(unit_sorted_dictionary):
+def sort_by_device_type(device_dictionary):
     device_type_sorted_dictionary = {}
-    pp.pprint(unit_sorted_dictionary)
 
-    for unit in unit_sorted_dictionary:
-#        pp.pprint(unit_sorted_dictionary[unit])
-        pp.pprint("===============")
-        pp.pprint("here is the unit")
-        pp.pprint(unit)
-
-        unit_entry = unit_sorted_dictionary[unit]
-        pp.pprint("===============")
-        pp.pprint("here is the unit entry")
-        pp.pprint(unit_entry)
-
-        pp.pprint("===============")
-        pp.pprint("here is the unit entry length")
-        pp.pprint(len(unit_entry))
-
-        for device in unit_entry:
-            pp.pprint("===============")
-            pp.pprint("here is the device")
-            pp.pprint(device)
-            pp.pprint("here is the device type")
-            pp.pprint(device['device_type'])
- 
-
-
-#        for device in unit_entry:
-    #        pp.pprint(device)
-    #    pp.pprint("===============")
-
-#        for device in unit_sorted_dictionary[unit_entry]
-#        for device_type in unit_sorted_dictionary[entry]:
-#            pp.pprint(device_type)
-
-#        device_type_name = sanitized_name(device_types[])
-#        device_type = sanitized_name(unit_sorted_dictionary[entry['device_type']])
-
+    for device in device_dictionary:
+#        pp.pprint(device)
+       device_type = sanitized_name(device['device_type'])
+#       pp.pprint(device_type)
         # Check if the device type has already
-        # been added as a key in the device_type_sorted_dictionary
-#        if device_type in device_type_sorted_dictionary:
-            # if it is, do not create it again
-            # just append it to the existing one
-#            device_type_sorted_dictionary[device_type].append(entry)
-#        else:
-            # if it is not, create the key
-#            device_type_sorted_dictionary[device_type] = [entry]
+        # been added as a key in the devices dictionary
+       if device_type in device_type_sorted_dictionary:
+           device_type_sorted_dictionary[device_type].append(device)
+       else: 
+           device_type_sorted_dictionary[device_type] = [device]
 
     return device_type_sorted_dictionary
 
@@ -196,11 +161,11 @@ def formatted_data(expanded_site_names_content, site_names):
         unit_sorted_dictionary = sort_by_unit_name(site_entry)
 
         # Now sort each unit by device type
-        for unit in unit_sorted_dictionary:
-            unit_device_type_sorted_dictionary = sort_by_device_type(unit_sorted_dictionary)
-
+        for unit, devices in unit_sorted_dictionary.items():
+            device_sorted_inventory = sort_by_device_type(devices)
+            # pp.pprint(unit_sorted_dictionary[unit])
             unit_sorted_dictionary[unit].clear()
-            unit_sorted_dictionary[unit] = unit_device_type_sorted_dictionary
+            unit_sorted_dictionary[unit] = device_sorted_inventory
         
         # Clear the entry for the site name in the dictionary
         sorted_site_name_data[site_entry_name].clear()
@@ -222,4 +187,4 @@ expanded_device_types_content = replace_device_types(contents, device_types)
 #pp.pprint(expanded_device_types_content)
 formatted_dictionary = formatted_data(expanded_site_names_content, site_names)
 
-#pp.pprint(formatted_dictionary)
+pp.pprint(formatted_dictionary)
