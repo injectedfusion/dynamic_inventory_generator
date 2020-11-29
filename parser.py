@@ -53,18 +53,63 @@ def site_names_map(path_to_map_file):
         sites = json.load(f)
     return sites
 
+# Takes a site name formatted like this: 'Disneyland Resort Anaheim'
+# and converts it to be formatted like this: 'disneyland_resort_anaheim'
+def sanitized_site_name(name):
+    lower_case_name = name.lower()
+    sanitized_name = lower_case_name.replace(" ", "_")
+    return sanitized_name
+
 def replace_site_names(contents, site_names):
     
     for c in contents:
         expanded_site_name = site_names[c['site_name']]
 
-        # replace site name abbreviation with expanded site name
-        c['site_name'] = expanded_site_name
+        # replace site name abbreviation with expanded 
+        # and sanitized site name
+        c['site_name'] = sanitized_site_name(expanded_site_name)
 
     return contents
 
 contents = file_contents('./tmp/hosts')
 site_names = site_names_map('./mappings/sites.json')
 
-output = replace_site_names(contents, site_names)
-pp.pprint(output)
+expanded_site_names_content = replace_site_names(contents, site_names)
+
+# Create a dictionary of dictionaries
+# where each dictionary corresponds to a 
+# site name (and one big dictionary holds
+# all of them)
+def site_dictionary(site_names):
+    site_dictionary = {}
+
+    for s in site_names:
+        site_name = site_names[s]
+        site_key = sanitized_site_name(site_name)
+        site_dictionary[site_key] = []
+    
+    return site_dictionary
+
+# Sort the entries by Site name
+def sort_by_site_names(expanded_site_names_contents, site_names):
+    container_dictionary = site_dictionary(site_names)
+
+    for entry in expanded_site_names_content:
+        site_name = entry['site_name']
+
+        container_dictionary[site_name].append(entry)
+
+    return container_dictionary
+
+#def sort_by_unit_name(site_names_dictionary)
+
+def formatted_data(expanded_site_names_content, site_names):
+    # First, sort by site name
+    formatted_data = sort_by_site_names(expanded_site_names_content, site_names)
+
+    return formatted_data
+
+
+formatted_dictionary = formatted_data(expanded_site_names_content, site_names)
+
+pp.pprint(formatted_dictionary)
