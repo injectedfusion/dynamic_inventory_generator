@@ -53,9 +53,9 @@ def site_names_map(path_to_map_file):
         sites = json.load(f)
     return sites
 
-# Takes a site name formatted like this: 'Disneyland Resort Anaheim'
+# Takes a string formatted like this: 'Disneyland Resort Anaheim'
 # and converts it to be formatted like this: 'disneyland_resort_anaheim'
-def sanitized_site_name(name):
+def sanitized_name(name):
     lower_case_name = name.lower()
     sanitized_name = lower_case_name.replace(" ", "_")
     return sanitized_name
@@ -67,7 +67,7 @@ def replace_site_names(contents, site_names):
 
         # replace site name abbreviation with expanded 
         # and sanitized site name
-        c['site_name'] = sanitized_site_name(expanded_site_name)
+        c['site_name'] = sanitized_name(expanded_site_name)
 
     return contents
 
@@ -85,7 +85,7 @@ def site_dictionary(site_names):
 
     for s in site_names:
         site_name = site_names[s]
-        site_key = sanitized_site_name(site_name)
+        site_key = sanitized_name(site_name)
         site_dictionary[site_key] = []
     
     return site_dictionary
@@ -101,14 +101,49 @@ def sort_by_site_names(expanded_site_names_contents, site_names):
 
     return container_dictionary
 
-#def sort_by_unit_name(site_names_dictionary)
+# Takes an individual site_name dictionary
+# Then sorts it by unit_name
+def sort_by_unit_name(site_name_dictionary):
+    unit_sorted_dictionary = {}
+
+    for entry in site_name_dictionary:
+        unit_name = sanitized_name(entry['unit_name'])
+
+        # Check if the unit name has already
+        # been added as a key in the unit dictionary
+        # Check if there is a key in the dictionary
+        # that corresponds with the unit name
+
+        if unit_name in unit_sorted_dictionary:
+            # if it is, do not create it again
+            # just append it to the existing one
+            unit_sorted_dictionary[unit_name].append(entry)
+        else:
+            # if it is not, create the key
+            unit_sorted_dictionary[unit_name] = [entry]
+
+    return unit_sorted_dictionary
+
 
 def formatted_data(expanded_site_names_content, site_names):
     # First, sort by site name
-    formatted_data = sort_by_site_names(expanded_site_names_content, site_names)
+    sorted_site_name_data = sort_by_site_names(expanded_site_names_content, site_names)
+    pp.pprint(sorted_site_name_data)
 
-    return formatted_data
+    # Now, sort by unit name
+    for site in site_names:
+        site_entry_name = sanitized_name(site_names[site])
+        site_entry = sorted_site_name_data[site_entry_name]
 
+        unit_sorted_dictionary = sort_by_unit_name(site_entry)
+  
+        # Clear the entry for the site name in the dictionary
+        sorted_site_name_data[site_entry_name].clear()
+
+        # Then set the entry to be the unit_sorted_dictionary
+        sorted_site_name_data[site_entry_name] = unit_sorted_dictionary
+        
+    return sorted_site_name_data
 
 formatted_dictionary = formatted_data(expanded_site_names_content, site_names)
 
