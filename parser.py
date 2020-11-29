@@ -47,7 +47,6 @@ def file_contents(path_to_file):
             output += [dict]
         return (output)
 
-
 def site_names_map(path_to_file):
     with open(path_to_file) as f:
         sites = json.load(f)
@@ -65,19 +64,16 @@ def sanitized_name(name):
     sanitized_name = lower_case_name.replace(" ", "_")
     return sanitized_name
 
-def replace_site_names(contents, site_names):
-    
-    for c in contents:
+# replaces site name or device type abbreviation
+# with an the expanded version
+def expand_names(contents, site_names, device_types):
+    for c in contents: 
         expanded_site_name = site_names[c['site_name']]
 
         # replace site name abbreviation with expanded 
         # and sanitized site name
         c['site_name'] = sanitized_name(expanded_site_name)
 
-    return contents
-
-def replace_device_types(contents, device_types):
-    for c in contents:
         expanded_device_type = device_types[c['device_type']]
 
         # replace site name abbreviation with expanded 
@@ -104,7 +100,7 @@ def site_dictionary(site_names):
 def sort_by_site_name(expanded_site_names_contents, site_names):
     container_dictionary = site_dictionary(site_names)
 
-    for entry in expanded_site_names_content:
+    for entry in expanded_site_names_contents:
         site_name = entry['site_name']
 
         # Remove site_name from the individual
@@ -209,10 +205,9 @@ site_names = site_names_map('./mappings/sites.json')
 device_types = device_types_map('./mappings/devices.json')
 #pp.pprint(device_types)
 
-expanded_site_names_content = replace_site_names(contents, site_names)
-expanded_device_types_content = replace_device_types(contents, device_types)
+expanded_content = expand_names(contents, site_names, device_types)
 
 #pp.pprint(expanded_device_types_content)
-formatted_dictionary = formatted_data(expanded_site_names_content, site_names)
+formatted_dictionary = formatted_data(expanded_content, site_names)
 
 pp.pprint(formatted_dictionary)
