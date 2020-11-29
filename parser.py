@@ -57,6 +57,14 @@ def device_types_map(path_to_file):
         device_types = json.load(f)
     return device_types
 
+# Takes an  abbreviated name and a map file
+# for the abbreviations
+# then returns the full name associated 
+# with the abbreviation
+def expanded_name(name, map):
+    expanded_name = map[name]
+    return expanded_name
+
 # Takes a string formatted like this: 'Disneyland Resort Anaheim'
 # and converts it to be formatted like this: 'disneyland_resort_anaheim'
 def sanitized_name(name):
@@ -64,29 +72,12 @@ def sanitized_name(name):
     sanitized_name = lower_case_name.replace(" ", "_")
     return sanitized_name
 
-# replaces site name or device type abbreviation
-# with an the expanded version
-def expand_names(contents, site_names, device_types):
-    for c in contents: 
-        expanded_site_name = site_names[c['site_name']]
-
-        # replace site name abbreviation with expanded 
-        # and sanitized site name
-        c['site_name'] = sanitized_name(expanded_site_name)
-
-        expanded_device_type = device_types[c['device_type']]
-
-        # replace site name abbreviation with expanded 
-        # and sanitized site name
-        c['device_type'] = sanitized_name(expanded_device_type)
-
-    return contents
-
-def formatted_hosts_json(input_contents):
+def formatted_hosts_json(input_contents, site_names_map, device_types_map):
     hosts_json_dict = {}
 
     for entry in input_contents:
-        site_name = entry['site_name']
+        expanded_site_name = expanded_name(entry['site_name'], site_names_map)
+        site_name = sanitized_name(expanded_site_name)
 
         # Check if the site name already exists
         # as a key in the hosts_json_dict dictionary
@@ -100,7 +91,7 @@ def formatted_hosts_json(input_contents):
         # to the site_name
         # if it does not already exist, add it
         # and set it to an empty dictionary
-        unit_name = entry['unit_name']
+        unit_name = sanitized_name(entry['unit_name'])
 
         if not unit_name in hosts_json_dict[site_name]:
             hosts_json_dict[site_name][unit_name] = {}
@@ -110,7 +101,8 @@ def formatted_hosts_json(input_contents):
         # exists as a key for the dictionary
         # if it does not already exist, add it
         # and set it to an empty ARRAY
-        device_type = entry['device_type']
+        expanded_device_type = expanded_name(entry['device_type'], device_types_map)
+        device_type = sanitized_name(expanded_device_type)
 
         if not device_type in hosts_json_dict[site_name][unit_name]:
             hosts_json_dict[site_name][unit_name][device_type] = []
@@ -136,5 +128,5 @@ contents = file_contents('./tmp/hosts')
 site_names = site_names_map('./mappings/sites.json')
 device_types = device_types_map('./mappings/devices.json')
 
-output = formatted_hosts_json(contents)
+output = formatted_hosts_json(contents, site_names, device_types)
 pp.pprint(output)
