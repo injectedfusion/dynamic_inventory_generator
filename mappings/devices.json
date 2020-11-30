@@ -1,3 +1,7 @@
 {
-    "os":"outer_switches"
+    "os":"outer_switches",
+    "is":"inner_switches",
+    "as":"access_switches",
+    "cs":"core_switches",
+    "ds":"distro_switches"
 }
