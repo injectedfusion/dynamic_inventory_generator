@@ -142,10 +142,31 @@ def formatted_hosts_json(input_contents, site_names_map, device_types_map):
     return inventory_dictionary
 
 
-contents = file_contents('./tmp/hosts')
-site_names = site_names_map('./mappings/sites.json')
-device_types = device_types_map('./mappings/devices.json')
+#contents = file_contents('./tmp/hosts')
+#site_names = site_names_map('./mappings/sites.json')
+#device_types = device_types_map('./mappings/devices.json')
 
-output = formatted_hosts_json(contents, site_names, device_types)
+#output = formatted_hosts_json(contents, site_names, device_types)
+#yaml_file = open('output.yaml', 'w+')
+#yaml.dump(output, yaml_file)
+
+print("Starting the dynamic inventory generator...")
+
+hosts_file = input("Please enter the path to your hostfile (for example, ./tmp/hosts):")
+site_names = input("Please enter the path to your sites name mapping file (for example, ./mappings/sites.json):")
+device_types = input("Please enter the path to your device mapping file (for example, ./mappings/devices.json):")
+
+print("Generating output.yml file")
+
+hosts_info = file_contents(hosts_file)
+site_names_info = site_names_map(site_names)
+device_types_info = device_types_map(device_types)
+
+output = formatted_hosts_json(hosts_info, site_names_info, device_types_info)
 yaml_file = open('output.yaml', 'w+')
 yaml.dump(output, yaml_file)
+
+print("Finished generating output.yaml")
+print("hosts file is: " + hosts_file)
+print("site names file is: " + site_names)
+print("device types file is: " + device_types)
