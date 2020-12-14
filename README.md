@@ -42,7 +42,7 @@ $ pip3 --version
 * Then you will need to clone this repository using git
 
 ```bash
-$ git clone git@github.com:injectedfusion/dynamic_inventory_generator.git 
+$ git clone https://github.com/injectedfusion/dynamic_inventory_generator.git
 ```
 
 * Then change directories into the repo and install the requirements using pip3
@@ -52,9 +52,16 @@ $ cd dynamic_inventory_generator
 $ pip3 install -r requirements.txt
 ```
 
-Now you are ready to run the software!
+## Creating the required files
 
-## Sample Data
+You will need three additional files to run this script:
+* hosts file (sample [here](tmp/hosts))
+* site names mapping file (sample [here](mappings/sites.json))
+* device names mapping file (sample [here](mappings/devices.json))
+
+### Hosts File
+
+The hosts file container the informations for the hosts you want to automate with Ansible.
 
 We have provided a sample hosts file in /tmp/hosts, which looks similar to this:
 
@@ -96,6 +103,10 @@ In this example, we have made up abbreviations for each Disneyland resort - "DLC
 
 To help with translating site abbreviations into site names in the Ansible yaml file, we have created a legend for the abbreviations in [this file](mappings/sites.json).
 
+### Site Names Mapping File
+
+You will need a file which maps your site abbreviations to the full name for the site. We have created a sample on in this repo:
+
 **mappings/sites.json**
 ```
 {
@@ -127,15 +138,27 @@ u00
 os
 ```
 * means the device type is an outer switch
-* we have also provided a legend for the types of devices in [this file](mappings/devices.json):
+
+### Device Types Mapping File
+
+You will need a Device Types Mapping file as well, which maps device type abbreviations to the full name for that device type.
+
+We have created a sample in this repo:
 
 **mappings/devices.json**
 
 ```
 {
-    "os":"outer_switches"
+{
+    "os":"outer_switches",
+    "is":"inner_switches",
+    "as":"access_switches",
+    "cs":"core_switches",
+    "ds":"distro_switches"
 }
 ```
+
+Now let's look at the next part of the host designation `DR13-u00-os-01a`
 
 ```
 01a
@@ -154,17 +177,43 @@ DR13-u00-os-01a
 
 ## Running the script
 
-Now, let's run the script on the sample data:
+Now, let's run the script.
 
 ```bash
 $ python3 parser.py
+
+Starting the dynamic inventory generator...
 ```
 
-This will produce a file called output.yaml on your system.
 
-If I open it up:
+You will be prompted for the path to your hosts file (the sample one in this repo is at `./tmp/hosts`).
 
-Tada! I will see output similar to this:
+```bash
+Please enter the path to your hostfile (for example, ./tmp/hosts):
+```
+
+Then you will be prompted for the path to your sites name mapping file (the sample one in this repo is at `./mappings/sites.json`).
+
+```bash
+Please enter the path to your sites name mapping file (for example, ./mappings/sites.json):
+```
+
+Finally, you will be prompted for the path to your device mapping file (the sample one in this repo is at `./mappings/devices.json`).
+
+```bash
+Please enter the path to your device mapping file (for example, ./mappings/devices.json):
+```
+
+After you provide the required input, you will see:
+
+```bash
+Generating output.yml file...
+Finished generating output.yaml
+```
+
+And you will now have a file called output.yaml in your local directory.
+
+If I open it up, you will see output similar to this:
 
 ```bash
 all:

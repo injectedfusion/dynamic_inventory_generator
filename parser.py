@@ -148,7 +148,7 @@ hosts_file = input("Please enter the path to your hostfile (for example, ./tmp/h
 site_names = input("Please enter the path to your sites name mapping file (for example, ./mappings/sites.json):")
 device_types = input("Please enter the path to your device mapping file (for example, ./mappings/devices.json):")
 
-print("Generating output.yml file")
+print("Generating output.yaml file....")
 
 hosts_info = file_contents(hosts_file)
 site_names_info = site_names_map(site_names)
@@ -159,6 +159,4 @@ yaml_file = open('output.yaml', 'w+')
 yaml.dump(output, yaml_file)
 
 print("Finished generating output.yaml")
-print("hosts file is: " + hosts_file)
-print("site names file is: " + site_names)
-print("device types file is: " + device_types)
+print("It should be available in the directory you ran the script from")
