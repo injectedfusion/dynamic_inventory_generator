@@ -142,14 +142,6 @@ def formatted_hosts_json(input_contents, site_names_map, device_types_map):
     return inventory_dictionary
 
 
-#contents = file_contents('./tmp/hosts')
-#site_names = site_names_map('./mappings/sites.json')
-#device_types = device_types_map('./mappings/devices.json')
-
-#output = formatted_hosts_json(contents, site_names, device_types)
-#yaml_file = open('output.yaml', 'w+')
-#yaml.dump(output, yaml_file)
-
 print("Starting the dynamic inventory generator...")
 
 hosts_file = input("Please enter the path to your hostfile (for example, ./tmp/hosts):")
